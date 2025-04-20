@@ -40,6 +40,7 @@ program
     .option('--port <port>', 'Port to listen on for SSE transport.')
     .option('--user-data-dir <path>', 'Path to the user data directory')
     .option('--vision', 'Run server that uses screenshots (Aria snapshots are used by default)')
+    .option('--anti-bot [level]', 'Enable anti-bot protection to avoid CAPTCHAs and behave like a human. Optional level: low, medium, high. Default is medium.')
     .action(async options => {
       const serverList = new ServerList(() => createServer({
         browser: options.browser,
@@ -49,6 +50,7 @@ program
         vision: !!options.vision,
         cdpEndpoint: options.cdpEndpoint,
         capabilities: options.caps?.split(',').map((c: string) => c.trim() as ToolCapability),
+        antiBot: options.antiBot ? { level: options.antiBot === true ? 'medium' : options.antiBot as 'low' | 'medium' | 'high' } : undefined,
       }));
       setupExitWatchdog(serverList);
 

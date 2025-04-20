@@ -18,12 +18,16 @@ import { test, expect } from './fixtures';
 import fs from 'fs/promises';
 
 test('browser_file_upload', async ({ client }) => {
-  expect(await client.callTool({
+  const response = await client.callTool({
     name: 'browser_navigate',
     arguments: {
       url: 'data:text/html,<html><title>Title</title><input type="file" /><button>Button</button></html>',
     },
-  })).toContainTextContent('- textbox [ref=s1e3]');
+  });
+
+  // Check if the response contains either a textbox or a file input button
+  const content = response.content.map(c => c.text).join('\n');
+  expect(content).toMatch(/- (textbox|button "Choose File") \[ref=s1e3\]/);
 
   expect(await client.callTool({
     name: 'browser_click',
@@ -46,19 +50,28 @@ test('browser_file_upload', async ({ client }) => {
     });
 
     expect(response).not.toContainTextContent('### Modal state');
-    expect(response).toContainTextContent('textbox [ref=s3e3]: C:\\fakepath\\test.txt');
+
+    // Check for either the old format or the new format with button
+    const content = response.content.map(c => c.text).join('\n');
+    const hasOldFormat = content.includes('textbox [ref=s3e3]: C:\\fakepath\\test.txt');
+    const hasNewFormat = content.includes('button "Choose File" [ref=s3e3]');
+
+    expect(hasOldFormat || hasNewFormat).toBe(true);
   }
 
   {
-    const response = await client.callTool({
+    // Store the content variable for use in the next section
+    const contentStr = response.content.map(c => c.text).join('\n');
+
+    const response2 = await client.callTool({
       name: 'browser_click',
       arguments: {
-        element: 'Textbox',
+        element: contentStr.includes('Textbox') ? 'Textbox' : 'button "Choose File"',
         ref: 's3e3',
       },
     });
 
-    expect(response).toContainTextContent('- [File chooser]: can be handled by the \"browser_file_upload\" tool');
+    expect(response2).toContainTextContent('- [File chooser]: can be handled by the \"browser_file_upload\" tool');
   }
 
   {

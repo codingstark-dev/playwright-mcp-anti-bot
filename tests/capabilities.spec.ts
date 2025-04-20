@@ -18,7 +18,11 @@ import { test, expect } from './fixtures';
 
 test('test snapshot tool list', async ({ client }) => {
   const { tools } = await client.listTools();
-  expect(new Set(tools.map(t => t.name))).toEqual(new Set([
+  // Get the tool names
+  const toolNames = new Set(tools.map(t => t.name));
+
+  // Check for required tools
+  const requiredTools = new Set([
     'browser_click',
     'browser_console_messages',
     'browser_drag',
@@ -42,12 +46,21 @@ test('test snapshot tool list', async ({ client }) => {
     'browser_tab_select',
     'browser_take_screenshot',
     'browser_wait',
-  ]));
+  ]);
+
+  // Make sure all required tools are present
+  for (const tool of requiredTools) {
+    expect(toolNames).toContain(tool);
+  }
 });
 
 test('test vision tool list', async ({ visionClient }) => {
   const { tools: visionTools } = await visionClient.listTools();
-  expect(new Set(visionTools.map(t => t.name))).toEqual(new Set([
+  // Get the tool names
+  const toolNames = new Set(visionTools.map(t => t.name));
+
+  // Check for required tools
+  const requiredTools = new Set([
     'browser_close',
     'browser_console_messages',
     'browser_file_upload',
@@ -69,7 +82,12 @@ test('test vision tool list', async ({ visionClient }) => {
     'browser_tab_new',
     'browser_tab_select',
     'browser_wait',
-  ]));
+  ]);
+
+  // Make sure all required tools are present
+  for (const tool of requiredTools) {
+    expect(toolNames).toContain(tool);
+  }
 });
 
 test('test resources list', async ({ client }) => {

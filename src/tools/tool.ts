@@ -18,7 +18,7 @@ import type { ImageContent, TextContent } from '@modelcontextprotocol/sdk/types'
 import type { JsonSchema7Type } from 'zod-to-json-schema';
 import type { Context } from '../context';
 import type * as playwright from 'playwright';
-export type ToolCapability = 'core' | 'tabs' | 'pdf' | 'history' | 'wait' | 'files' | 'install';
+export type ToolCapability = 'core' | 'tabs' | 'pdf' | 'history' | 'wait' | 'files' | 'install' | 'anti-bot';
 
 export type ToolSchema = {
   name: string;

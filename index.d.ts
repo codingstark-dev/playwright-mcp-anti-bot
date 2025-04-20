@@ -17,7 +17,7 @@
 
 import type { Server } from '@modelcontextprotocol/sdk/server/index.js';
 
-type ToolCapability = 'core' | 'tabs' | 'pdf' | 'history' | 'wait' | 'files' | 'install';
+type ToolCapability = 'core' | 'tabs' | 'pdf' | 'history' | 'wait' | 'files' | 'install' | 'anti-bot';
 
 type Options = {
     /**
@@ -53,8 +53,32 @@ type Options = {
      *   - 'wait': Wait and timing utilities.
      *   - 'files': File upload/download support.
      *   - 'install': Browser installation utilities.
+     *   - 'anti-bot': Anti-bot protection features.
      */
     capabilities?: ToolCapability[];
+
+    /**
+     * Enable anti-bot protection to make browser automation more human-like and avoid CAPTCHAs.
+     * Can be a boolean or an object with configuration options.
+     */
+    antiBot?: boolean | {
+        /**
+         * Protection level: low, medium, or high. Default is medium.
+         */
+        level?: 'low' | 'medium' | 'high';
+        /**
+         * Custom user agent string. If not provided, a realistic one will be generated.
+         */
+        userAgent?: string;
+        /**
+         * Platform to emulate.
+         */
+        platform?: 'windows' | 'macos' | 'linux' | 'android' | 'ios';
+        /**
+         * Browser to emulate.
+         */
+        browser?: 'chrome' | 'firefox' | 'safari' | 'edge';
+    };
 };
 export declare function createServer(options?: Options): Promise<Server>;
 export {};

@@ -7,6 +7,7 @@ A Model Context Protocol (MCP) server that provides browser automation capabilit
 - **Fast and lightweight**: Uses Playwright's accessibility tree, not pixel-based input.
 - **LLM-friendly**: No vision models needed, operates purely on structured data.
 - **Deterministic tool application**: Avoids ambiguity common with screenshot-based approaches.
+- **Anti-bot protection**: Simulates human-like behavior to avoid CAPTCHAs and detection.
 
 ### Use Cases
 
@@ -75,6 +76,7 @@ The Playwright MCP server supports the following command-line options:
 - `--port <port>`: Port to listen on for SSE transport
 - `--user-data-dir <path>`: Path to the user data directory
 - `--vision`: Run server that uses screenshots (Aria snapshots are used by default)
+- `--anti-bot [level]`: Enable anti-bot protection to avoid CAPTCHAs and behave like a human. Optional level: low, medium, high. Default is medium.
 
 ### User data directory
 
@@ -153,6 +155,49 @@ To use Vision Mode, add the `--vision` flag when starting the server:
 
 Vision Mode works best with the computer use models that are able to interact with elements using
 X Y coordinate space, based on the provided screenshot.
+
+### Anti-Bot Protection
+
+The MCP server includes anti-bot protection features that make browser automation more human-like and help avoid triggering CAPTCHAs and other anti-bot measures.
+
+To enable anti-bot protection with default settings (medium level):
+
+```js
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--anti-bot"
+      ]
+    }
+  }
+}
+```
+
+You can specify a protection level (low, medium, or high):
+
+```js
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--anti-bot=high"
+      ]
+    }
+  }
+}
+```
+
+The anti-bot protection includes:
+- Human-like mouse movement with natural acceleration and curves
+- Human-like typing with variable speed and occasional errors
+- Human-like scrolling behavior
+- Realistic user agents and browser fingerprinting
+- CAPTCHA avoidance strategies
 
 ### Programmatic usage with custom transports
 
@@ -341,3 +386,17 @@ server.connect(transport);
 - **browser_install**
   - Description: Install the browser specified in the config. Call this if you get an error about the browser not being installed.
   - Parameters: None
+
+### Anti-Bot Protection
+
+- **browser_enable_anti_bot**
+  - Description: Enable anti-bot protection to make browser automation more human-like and avoid CAPTCHAs
+  - Parameters:
+    - `level` (string, optional): Protection level: low, medium, or high. Default is medium.
+
+- **browser_configure_user_agent**
+  - Description: Configure the browser user agent to avoid fingerprinting
+  - Parameters:
+    - `userAgent` (string, optional): Custom user agent string. If not provided, a realistic one will be generated.
+    - `platform` (string, optional): Platform to emulate (windows, macos, linux, android, ios)
+    - `browser` (string, optional): Browser to emulate (chrome, firefox, safari, edge)
